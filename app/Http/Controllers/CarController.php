@@ -29,15 +29,22 @@ class CarController extends Controller
      */
     public function index(Request $request)
     {
+        $category_id = $request->category_id;
         $categories = Category::all();
-        $allCars = Car::paginate(6);
-        $cars = Car::where('status', 1)->paginate(6);
+        if(isset($category_id)){
+            $allCars = Car::where('category_id', $category_id)->paginate(6);
+            $cars = Car::where('status', 2)->where('category_id', $category_id)->paginate(6);
+        }
+        else{
+            $allCars = Car::paginate(6);
+            $cars = Car::where('status', 2)->paginate(6);
+        }
         $user = Auth::user();
         $isAdmin = isset($user) ? $user->isAdmin() : false;
+
         if ($request->ajax()) {
             return view('cars.index', compact('categories', 'cars', 'isAdmin', 'allCars'))->render();
         }
-
         return view('cars.index', compact('categories', 'cars', 'isAdmin', 'allCars'));
 
     }
@@ -111,6 +118,11 @@ class CarController extends Controller
     public function show($id)
     {
         //
+        $user = Auth::user();
+        $isAdmin = isset($user) ? $user->isAdmin() : false;
+        $car = Car::where('id', $id)->get();
+        $car = $car[0];
+        return view('cars.show', compact('car', 'isAdmin'));
     }
 
     /**
@@ -146,4 +158,15 @@ class CarController extends Controller
     {
         //
     }
+
+//    public function categoryChange(Request $request){
+//        $category_id = isset($request->category_id) ? $request->category_id : "";
+//        $cars = Car::where('category_id', $category_id)->get();
+//        if ($request->ajax()) {
+//            return view('cars.index', compact('cars'))->render();
+//        }
+//        return view('cars.index', compact('cars'));
+//
+//    }
+
 }

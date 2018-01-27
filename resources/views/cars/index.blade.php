@@ -7,12 +7,15 @@
         <div class="col-lg-3">
 
             <h1 class="my-4">Shop Name</h1>
-            <select class="category-select" style="width: 200px;">
-                    <option>All</option>
+            <form action="/cars" method="GET" class="category-form">
+            {{ csrf_field() }}
+            <select class="category-select" name="category_id" style="width: 200px;">
+                    <option selected value="0" >All</option>
                 @foreach($categories as $category)
-                    <option>{{$category->cat_name}}</option>
+                    <option value="{{$category->id}}">{{$category->cat_name}}</option>
                 @endforeach
             </select>
+            </form>
 
         </div>
         <div class="col-lg-9">
@@ -29,6 +32,7 @@
                                         <p href="#">{{substr($carA->car_name, 0 , 20).".."}}</p>
                                     </h4>
                                     <h5>{{$carA->car_price}}&euro;</h5>
+                                    <p class="id-category" style="display: none;" >{{$carA->category_id}}</p>
                                     <p class="card-text">The car passed: {{$carA->car_mileage}}km</p>
                                     <p>status: @if($carA->status === 0) deleted @elseif($carA->status === 1) on hold @else allowed @endif</p>
                                     @if($carA->status === 1)
@@ -74,6 +78,7 @@
                                     <p href="#">{{$car->car_name}}</p>
                                 </h4>
                                 <h5>{{$car->car_price}}&euro;</h5>
+                                <p class="id-category" style="display: none;">{{$car->category_id}}</p>
                                 <p class="card-text">The car passed: {{$car->car_mileage}}km</p>
                            </div>
                 </div>
@@ -90,24 +95,6 @@
 
     </div>
     <!-- /.row -->
-    <script>
-        $(document).on('click', '.pagination a', function(e){
-            e.preventDefault();
-
-            //console.log($(this).attr('href').split('page=')[1]);
-            var page =  $(this).attr('href').split('page=')[1];
-
-            getProductPage(page);
-        });
-
-        function getProductPage(page){
-            $.ajax({
-                url: '/cars?page='+page
-            }).done(function(data){
-                //console.log(data);
-                $('body').html(data);
-            });
-        }
-    </script>
+    <script type="text/javascript" src="js/pagination.js" ></script>
 
 @endsection
